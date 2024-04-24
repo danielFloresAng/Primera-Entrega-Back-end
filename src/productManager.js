@@ -11,7 +11,7 @@ class ProductManager {
     let generateID = itemsList.length + 1;
     let findCode = itemsList.find((elem) => elem.code === item.code);
 
-    !findCode
+    !findCode || item.code === undefined
       ? itemsList.push({ id: generateID, ...item })
       : console.error(`El producto con código "${item.code}" ya existe`);
 

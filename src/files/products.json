@@ -9,5 +9,16 @@
     "stock": 2,
     "category": "thriller",
     "thumbnails": ["Sin imagen"]
+  },
+  {
+    "id": 2,
+    "title": "producto prueba 2 cambio",
+    "description": "Este es el producto prueba 2",
+    "code": "abasd45gadsc2",
+    "price": 400,
+    "status": true,
+    "stock": 3,
+    "category": "thriller",
+    "thumbnails": ["Sin imagen"]
   }
 ]

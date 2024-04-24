@@ -4,7 +4,7 @@ import setup from "../config.js";
 
 const endPoints = Router();
 const itemsManager = new ProductManager("../src/files/products.json");
-const cartManager = new ProductManager("../src/files/carts.json")
+const cartManager = new ProductManager("../src/files/carts.json");
 
 // ---> GET DE INICIO EN LOCAL HOST 8080
 endPoints.get("/", (req, res) => {
@@ -44,28 +44,28 @@ Todos los campos son obligatorios, a excepción de thumbnails
 });
 
 // ---> PUT PARA ACTUALIZAR PRODUCTOS
-endPoints.put("/api/products:pid", async (req, res) => {
-  const ID = req.params.pid
-  const update = req.body
+endPoints.put("/api/products/:pid", async (req, res) => {
+  const ID = req.params.pid;
+  const update = req.body;
   /*
   La ruta PUT /:pid deberá tomar un producto y actualizarlo por los campos enviados desde body. NUNCA se debe actualizar o eliminar el id al momento de hacer dicha actualización.
 */
-await itemsManager.updateProduct(+ID, update)
+  await itemsManager.updateProduct(+ID, update);
   res.send(itemsManager.getProductsById(+ID));
 });
 
 // ---> DELETE PARA BORRAR PRODUCTOS CON EL ID SELECCIONADO
-endPoints.delete("/api/products:pid", async (req, res) => {
+endPoints.delete("/api/products/:pid", async (req, res) => {
   // La ruta DELETE /:pid deberá eliminar el producto con el pid indicado.
-  const deleteItem = req.params.pid
-  await itemsManager.deleteProduct(+deleteItem)
-  res.send(itemsManager.getProducts());
+  const deleteItem = req.params.pid;
+  await itemsManager.deleteProduct(+deleteItem);
+  res.send({ status: "ok", playload: itemsManager.getProducts() });
 });
 
 // ---> POST PARA CREAR NUEVO CARRITO
 endPoints.post("/api/carts", (req, res) => {
-  const newCart = req.body
-  cartManager.addProducts(newCart)
+  const newCart = req.body;
+  cartManager.addProducts(newCart);
   /*
   Para el carrito, el cual tendrá su router en /api/carts/, configurar dos rutas:
   La ruta raíz POST / deberá crear un nuevo carrito con la siguiente estructura:
@@ -76,15 +76,15 @@ endPoints.post("/api/carts", (req, res) => {
   res.send(cartManager.getProducts());
 });
 // ---> GET PARA LISTAR PRODUCTOS
-endPoints.get("/api/carts:cid", async (req, res) => {
-  const list = req.params.cid
+endPoints.get("/api/carts/:cid", async (req, res) => {
+  const cartID = req.params.cid;
   // La ruta GET /:cid deberá listar los productos que pertenezcan al carrito con el parámetro cid proporcionados.
-  res.send(cartManager.getProductsById(+list));
+  const cartItems = await cartManager.getProductsById(+cartID);
+  res.send({ status: "ok", playload: cartItems });
 });
 
 // ---> POST PARA AGREGAR PRODUCTO A "products"
 endPoints.post("/api/carts:cid/product/:pid", (req, res) => {
-  
   /*
   La ruta POST  /:cid/product/:pid deberá agregar el producto al arreglo “products” del carrito seleccionado, agregándose como un objeto bajo el siguiente formato:
   product: SÓLO DEBE CONTENER EL ID DEL PRODUCTO (Es crucial que no agregues el producto completo)
