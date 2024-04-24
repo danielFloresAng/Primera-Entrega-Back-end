@@ -5,15 +5,15 @@ class ProductManager {
     this.products = [];
     this.path = path;
   }
-  async addProduts(item) {
+  async addProducts(item) {
     let itemsList = this.products;
     let itemListPath = this.path;
     let generateID = itemsList.length + 1;
     let findCode = itemsList.find((elem) => elem.code === item.code);
 
     !findCode
-      ? itemsList.push({ ...item, id: generateID })
-      : console.error(`El producto con código "${elem.code}" ya existe`);
+      ? itemsList.push({ id: generateID, ...item })
+      : console.error(`El producto con código "${item.code}" ya existe`);
 
     let listJSON = JSON.stringify(itemsList);
 
@@ -35,47 +35,42 @@ class ProductManager {
       ? getItem
       : { error: `El producto con ID "${itemID}" no existe` };
   }
-  updateProduct(productID, properties) {
-    const findAndModify = async () => {
-      let readItems = await fs.promises.readFile(this.path, "utf-8");
-      let listParse = JSON.parse(readItems);
+  async updateProduct(productID, properties) {
+    let readItems = await fs.promises.readFile(this.path, "utf-8");
+    let listParse = JSON.parse(readItems);
 
-      listParse.forEach((elem) => {
-        if (productID === elem.id) {
-          for (let prop in properties) {
-            if (prop !== "id") {
-              elem[prop] = properties[prop];
-            }
+    listParse.forEach((elem) => {
+      if (productID === elem.id) {
+        for (let prop in properties) {
+          if (prop !== "id") {
+            elem[prop] = properties[prop];
           }
         }
-      });
-      let listJSON = JSON.stringify(listParse);
-      await fs.promises.writeFile(this.path, listJSON);
-    };
-    findAndModify();
+      }
+    });
+    let listJSON = JSON.stringify(listParse);
+    await fs.promises.writeFile(this.path, listJSON);
   }
-  deleteProduct(elemId) {
+  async deleteProduct(elemId) {
     let itemsList = this.products;
 
-    const deleteItem = async () => {
-      let readItems = await fs.promises.readFile(this.path, "utf-8");
-      let list = JSON.parse(readItems);
-      let filterItem = list.findIndex((elem) => elem.id === elemId);
+    let readItems = await fs.promises.readFile(this.path, "utf-8");
+    let list = JSON.parse(readItems);
+    let filterItem = list.findIndex((elem) => elem.id === elemId);
 
-      if (filterItem !== -1) {
-        itemsList.splice(filterItem, 1);
-      }
-      let listJSON = JSON.stringify(itemsList);
-      await fs.promises.writeFile(this.path, listJSON);
-    };
-    deleteItem();
+    if (filterItem !== -1) {
+      itemsList.splice(filterItem, 1);
+    }
+    let listJSON = JSON.stringify(itemsList);
+    await fs.promises.writeFile(this.path, listJSON);
   }
 }
 
 // Creando productos
 let manager = new ProductManager("./files/itemList.json");
 
-manager.addProduts({
+/* 
+manager.addProducts({
   title: "producto prueba 1",
   description: "Este es el producto prueba 1",
   price: 200,
@@ -83,7 +78,7 @@ manager.addProduts({
   code: "abc1",
   stock: 2,
 });
-manager.addProduts({
+manager.addProducts({
   title: "producto prueba 2",
   description: "Este es el producto prueba 2",
   price: 400,
@@ -91,7 +86,7 @@ manager.addProduts({
   code: "abc2",
   stock: 3,
 });
-manager.addProduts({
+manager.addProducts({
   title: "producto prueba 3",
   description: "Este es el producto prueba 3",
   price: 200,
@@ -99,7 +94,7 @@ manager.addProduts({
   code: "abc3",
   stock: 6,
 });
-manager.addProduts({
+manager.addProducts({
   title: "producto prueba 4",
   description: "Este es el producto prueba 4",
   price: 230,
@@ -107,7 +102,7 @@ manager.addProduts({
   code: "abc4",
   stock: 4,
 });
-manager.addProduts({
+manager.addProducts({
   title: "producto prueba 5",
   description: "Este es el producto prueba 5",
   price: 200,
@@ -115,7 +110,7 @@ manager.addProduts({
   code: "abc5",
   stock: 8,
 });
-manager.addProduts({
+manager.addProducts({
   title: "producto prueba 6",
   description: "Este es el producto prueba 6",
   price: 460,
@@ -123,7 +118,7 @@ manager.addProduts({
   code: "abc6",
   stock: 3,
 });
-manager.addProduts({
+manager.addProducts({
   title: "producto prueba 7",
   description: "Este es el producto prueba 7",
   price: 490,
@@ -131,7 +126,7 @@ manager.addProduts({
   code: "abc7",
   stock: 9,
 });
-manager.addProduts({
+manager.addProducts({
   title: "producto prueba 8",
   description: "Este es el producto prueba 8",
   price: 660,
@@ -139,7 +134,7 @@ manager.addProduts({
   code: "abc8",
   stock: 2,
 });
-manager.addProduts({
+manager.addProducts({
   title: "producto prueba 9",
   description: "Este es el producto prueba 9",
   price: 750,
@@ -147,7 +142,7 @@ manager.addProduts({
   code: "abc9",
   stock: 8,
 });
-manager.addProduts({
+manager.addProducts({
   title: "producto prueba 10",
   description: "Este es el producto prueba 10",
   price: 1020,
@@ -155,5 +150,6 @@ manager.addProduts({
   code: "abc10",
   stock: 3,
 });
+*/
 
 export default ProductManager;
