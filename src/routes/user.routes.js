@@ -39,19 +39,18 @@ endPoints.post("/api/products", async (req, res) => {
 endPoints.put("/api/products/:pid", async (req, res) => {
   const ID = req.params.pid;
   const update = req.body;
-  /*
-  La ruta PUT /:pid deberá tomar un producto y actualizarlo por los campos enviados desde body. NUNCA se debe actualizar o eliminar el id al momento de hacer dicha actualización.
-*/
+
   await itemsManager.updateProduct(+ID, update);
   res.send(itemsManager.getProductsById(+ID));
 });
 
 // ---> DELETE PARA BORRAR PRODUCTOS CON EL ID SELECCIONADO
-endPoints.delete("/api/products/:pid", async (req, res) => {
-  // La ruta DELETE /:pid deberá eliminar el producto con el pid indicado.
+endPoints.delete("/api/products/d", async (req, res) => {
   const deleteItem = req.params.pid;
-  await itemsManager.deleteProduct(+deleteItem);
+  await itemsManager.deleteProduct(deleteItem);
+  // const oi = await itemsManager.deleteProduct(deleteItem);
   res.send({ status: "ok", playload: itemsManager.getProducts() });
+  // res.send({ status: "ok", playload: oi });
 });
 
 // ---> POST PARA CREAR NUEVO CARRITO
@@ -70,7 +69,15 @@ endPoints.get("/api/carts/:cid", async (req, res) => {
 });
 
 // ---> POST PARA AGREGAR PRODUCTO A "products"
-endPoints.post("/api/carts:cid/product/:pid", (req, res) => {
+endPoints.post("/api/carts:cid/product/:pid", async (req, res) => {
+  const itemID = req.params.pid;
+  const cartID = req.params.cid;
+  const itemFilter = await itemsManager.getProductsById(+itemID);
+  const cartFilter = await cartManager.getProductsById(+cartID);
+
+  cartFilter.forEach();
+
+  const sdf = cartFilter.products.push({ product: itemFilter.id, quantity: 4 });
   /*
   La ruta POST  /:cid/product/:pid deberá agregar el producto al arreglo “products” del carrito seleccionado, agregándose como un objeto bajo el siguiente formato:
   product: SÓLO DEBE CONTENER EL ID DEL PRODUCTO (Es crucial que no agregues el producto completo)
@@ -83,10 +90,5 @@ endPoints.post("/api/carts:cid/product/:pid", (req, res) => {
 
   res.send();
 });
-
-/*
-La persistencia de la información se implementará utilizando el file system, donde los archivos “productos,json” y “carrito.json”, respaldan la información.
-No es necesario realizar ninguna implementación visual, todo el flujo se puede realizar por Postman o por el cliente de tu preferencia.
- */
 
 export default endPoints;
