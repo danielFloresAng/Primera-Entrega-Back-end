@@ -30,14 +30,6 @@ endPoints.get("/api/products/:pid", async (req, res) => {
 // ---> POST PARA AGREGAR PRODUCTOS
 endPoints.post("/api/products", async (req, res) => {
   const addItem = req.body;
-  /* 
-  La ruta raíz POST / deberá agregar un nuevo producto con los campos:
-id: Number/String (A tu elección, el id NO se manda desde body, se autogenera como lo hemos visto desde los primeros entregables, asegurando que NUNCA se repetirán los ids en el archivo.
-
-thumbnails:Array de Strings que contenga las rutas donde están almacenadas las imágenes referentes a dicho producto
-Status es true por defecto.
-Todos los campos son obligatorios, a excepción de thumbnails
-*/
 
   await itemsManager.addProducts(addItem);
   res.send({ status: "OK", playload: itemsManager.getProducts() });
@@ -66,12 +58,6 @@ endPoints.delete("/api/products/:pid", async (req, res) => {
 endPoints.post("/api/carts", (req, res) => {
   const newCart = req.body;
   cartManager.addProducts(newCart);
-  /*
-  Para el carrito, el cual tendrá su router en /api/carts/, configurar dos rutas:
-  La ruta raíz POST / deberá crear un nuevo carrito con la siguiente estructura:
-  Id:Number/String (A tu elección, de igual manera como con los productos, debes asegurar que nunca se dupliquen los ids y que este se autogenere).
-  products: Array que contendrá objetos que representen cada producto
-  */
 
   res.send(cartManager.getProducts());
 });
