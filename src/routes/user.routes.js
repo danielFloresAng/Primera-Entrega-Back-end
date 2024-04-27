@@ -69,15 +69,23 @@ endPoints.get("/api/carts/:cid", async (req, res) => {
 });
 
 // ---> POST PARA AGREGAR PRODUCTO A "products"
-endPoints.post("/api/carts:cid/product/:pid", async (req, res) => {
+endPoints.post("/api/carts/:cid/product/:pid", async (req, res) => {
   const itemID = req.params.pid;
   const cartID = req.params.cid;
   const itemFilter = await itemsManager.getProductsById(+itemID);
   const cartFilter = await cartManager.getProductsById(+cartID);
 
-  cartFilter.forEach();
+  cartFilter.products.forEach((elem) => {
+    if (elem.id === itemFilter.id && elem.quantity) {
+      elem = { ...itemFilter.id, quantity: quantity + 1 };
+    } else if (elem.id === itemFilter.id && !elem.quantity) {
+      elem = { ...itemFilter.id, quantity: 1 };
+    } else {
+      cartFilter.products.push({ product: itemFilter.id, quantity: 1 });
+    }
+  });
 
-  const sdf = cartFilter.products.push({ product: itemFilter.id, quantity: 4 });
+  // const sdf = cartFilter.products.push({ product: itemFilter.id, quantity: 4 });
   /*
   La ruta POST  /:cid/product/:pid deberá agregar el producto al arreglo “products” del carrito seleccionado, agregándose como un objeto bajo el siguiente formato:
   product: SÓLO DEBE CONTENER EL ID DEL PRODUCTO (Es crucial que no agregues el producto completo)
@@ -88,7 +96,7 @@ endPoints.post("/api/carts:cid/product/:pid", async (req, res) => {
   
   */
 
-  res.send();
+  res.send({ status: "ok", playload: cartFilter });
 });
 
 export default endPoints;
