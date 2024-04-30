@@ -1,10 +1,11 @@
 import { Router } from "express";
 import ProductManager from "../productManager.js";
+import CartManager from "../cartManager.js";
 import setup from "../config.js";
 
 const endPoints = Router();
 const itemsManager = new ProductManager("../src/files/products.json");
-const cartManager = new ProductManager("../src/files/carts.json");
+const cartManager = new CartManager("../src/files/carts.json");
 
 // ---> GET DE INICIO EN LOCAL HOST 8080
 endPoints.get("/", (req, res) => {
@@ -73,18 +74,19 @@ endPoints.post("/api/carts/:cid/product/:pid", async (req, res) => {
   const itemID = req.params.pid;
   const cartID = req.params.cid;
   const itemFilter = await itemsManager.getProductsById(+itemID);
-  const cartFilter = await cartManager.getProductsById(+cartID);
+  let cartFilter = await cartManager.getCartsById(+cartID);
+  const findItem = cartFilter.products.find(
+    (elem) => elem.id == itemID || elem.productID == itemID
+  );
 
-  cartFilter.products.forEach((elem) => {
-    if (elem.id === itemFilter.id && elem.quantity) {
-      elem = { ...itemFilter.id, quantity: quantity + 1 };
-    } else if (elem.id === itemFilter.id && !elem.quantity) {
-      elem = { ...itemFilter.id, quantity: 1 };
-    } else {
-      cartFilter.products.push({ product: itemFilter.id, quantity: 1 });
-    }
-  });
+  if (!findItem) {
+    cartFilter.products.push({
+      productID: itemID,
+      quantity: 1,
+    });
+  }
 
+  await cartManager.updateCart(+cartID, { products: cartFilter.products });
   // const sdf = cartFilter.products.push({ product: itemFilter.id, quantity: 4 });
   /*
   La ruta POST  /:cid/product/:pid deberá agregar el producto al arreglo “products” del carrito seleccionado, agregándose como un objeto bajo el siguiente formato:
@@ -96,7 +98,7 @@ endPoints.post("/api/carts/:cid/product/:pid", async (req, res) => {
   
   */
 
-  res.send({ status: "ok", playload: cartFilter });
+  res.send({ status: "ok", playload: cartFilter.products[0] });
 });
 
 export default endPoints;
