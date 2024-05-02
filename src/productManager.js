@@ -6,14 +6,16 @@ class ProductManager {
     this.path = path;
   }
   async addProducts(item) {
-    let itemsList = this.products;
+    let readItems = await fs.promises.readFile(this.path, this.products);
+    let itemsList = JSON.parse(readItems);
     let itemListPath = this.path;
     let generateID = itemsList.length + 1;
     let findCode = itemsList.find((elem) => elem.code === item.code);
+    let errorMesagge = `El producto con código "${item.code}" ya existe`;
 
     !findCode || item.code === undefined
       ? itemsList.push({ id: generateID, ...item })
-      : console.error(`El producto con código "${item.code}" ya existe`);
+      : console.error(errorMesagge);
 
     let listJSON = JSON.stringify(itemsList);
 
